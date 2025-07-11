@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz de Figuras Geométricas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .quiz-container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      color: #4CAF50;
+    }
+
+    .question {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .shape {
+      margin: 10px auto;
+      width: 100px;
+      height: 100px;
+    }
+
+    .circle {
+      border-radius: 50%;
+      background-color: #4CAF50;
+    }
+
+    .square {
+      background-color: #4CAF50;
+    }
+
+    .triangle {
+      width: 0;
+      height: 0;
+      border-left: 50px solid transparent;
+      border-right: 50px solid transparent;
+      border-bottom: 100px solid #4CAF50;
+    }
+
+    .pentagon {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      background-color: #4CAF50;
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    li {
+      background-color: #f9f9f9;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    li:hover {
+      background-color: #f1f1f1;
+    }
+
+    li.selected {
+      border: 2px solid #4CAF50;
+      background-color: #e0f7e9;
+    }
+
+    li.correct {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    li.wrong {
+      background-color: #f44336;
+      color: white;
+    }
+
+    button {
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 10px 20px;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #result-box {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <header>
+      <h1>Quiz de Figuras Geométricas</h1>
+      <p>Teste seus conhecimentos sobre formas planas!</p>
+    </header>
+    <div id="quiz-box">
+      <div class="question">
+        <h3 id="question"></h3>
+        <div id="shape" class="shape"></div>
+      </div>
+      <ul id="options"></ul>
+      <button id="submit-btn">Responder</button>
+    </div>
+    <div id="result-box" class="hidden">
+      <h2 id="result"></h2>
+      <button id="restart-btn">Recomeçar</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Quantos lados possui um triângulo?",
+        shape: "triangle",
+        options: ["3", "4", "5", "6"],
+        correct: "3"
+      },
+      {
+        question: "Qual é o nome desta figura?",
+        shape: "square",
+        options: ["Quadrado", "Retângulo", "Trapézio", "Losango"],
+        correct: "Quadrado"
+      },
+      {
+        question: "Qual é o nome desta figura?",
+        shape: "pentagon",
+        options: ["Pentágono", "Hexágono", "Octógono", "Quadrado"],
+        correct: "Pentágono"
+      },
+      {
+        question: "Qual é o nome desta figura?",
+        shape: "circle",
+        options: ["Círculo", "Elipse", "Oval", "Semicírculo"],
+        correct: "Círculo"
+      }
+    ];
+
+    const quizBox = document.getElementById('quiz-box');
+    const questionEl = document.getElementById('question');
+    const shapeEl = document.getElementById('shape');
+    const optionsEl = document.getElementById('options');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultBox = document.getElementById('result-box');
+    const resultEl = document.getElementById('result');
+    const restartBtn = document.getElementById('restart-btn');
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedOption = null;
+
+    function loadQuestion() {
+      const current = questions[currentQuestion];
+      questionEl.textContent = current.question;
+      shapeEl.className = `shape ${current.shape}`;
+      optionsEl.innerHTML = '';
+      selectedOption = null;
+
+      current.options.forEach(option => {
+        const li = document.createElement('li');
+        li.textContent = option;
+        li.onclick = () => selectOption(li);
+        optionsEl.appendChild(li);
+      });
+    }
+
+    function selectOption(li) {
+      const options = optionsEl.querySelectorAll('li');
+      options.forEach(option => option.classList.remove('selected'));
+      li.classList.add('selected');
+      selectedOption = li;
+    }
+
+    submitBtn.onclick = function () {
+      if (!selectedOption) return;
+
+      const correctAnswer = questions[currentQuestion].correct;
+
+      if (selectedOption.textContent === correctAnswer) {
+        selectedOption.classList.add('correct');
+        selectedOption.textContent += " ✅";
+        score++;
+      } else {
+        selectedOption.classList.add('wrong');
+        selectedOption.textContent += " ❌";
+      }
+
+      const options = optionsEl.querySelectorAll('li');
+      options.forEach(option => option.onclick = null);
+
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        setTimeout(loadQuestion, 1000);
+      } else {
+        setTimeout(showResult, 1000);
+      }
+    };
+
+    function showResult() {
+      quizBox.classList.add('hidden');
+      resultBox.classList.remove('hidden');
+      resultEl.textContent = `Você acertou ${score} de ${questions.length} perguntas!`;
+    }
+
+    restartBtn.onclick = function () {
+      currentQuestion = 0;
+      score = 0;
+      selectedOption = null;
+      resultBox.classList.add('hidden');
+      quizBox.classList.remove('hidden');
+      loadQuestion();
+    };
+
+    loadQuestion();
+  </script>
+</body>
+</html>
